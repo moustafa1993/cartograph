@@ -3,6 +3,17 @@ import { assertEnv } from './lib/env'
 
 assertEnv()
 
-const nextConfig: NextConfig = {}
+// Tailwind runs as a Turbopack loader rather than through PostCSS: one tool
+// compiles the CSS instead of two.
+const nextConfig: NextConfig = {
+	turbopack: {
+		rules: {
+			'*.css': {
+				loaders: ['@tailwindcss/turbopack'],
+				as: '*.css',
+			},
+		},
+	},
+}
 
 export default nextConfig
