@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "parse": "node scripts/parse.ts",
+    "insights": "node scripts/insights.ts",
     "map-counts": "node scripts/map-counts.ts"
   },
   "dependencies": {
