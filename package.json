@@ -8,11 +8,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "parse": "node scripts/parse.ts"
+    "parse": "node scripts/parse.ts",
+    "map-counts": "node scripts/map-counts.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.14",
+    "@dagrejs/dagre": "^3.1.1",
     "@supabase/supabase-js": "^2.117.3",
+    "@xyflow/react": "^12.12.0",
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
