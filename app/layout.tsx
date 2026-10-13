@@ -1,69 +1,56 @@
-import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { SIGN_IN_PATH, SIGN_UP_PATH, WORKSPACE_PATH } from "@/lib/routes";
-import { THEME_SCRIPT } from "./theme-script";
-import "./globals.css";
+import { ClerkProvider } from '@clerk/nextjs'
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import { cookies } from 'next/headers'
+import { parseTheme, THEME_COOKIE } from '@/lib/theme'
+import './globals.css'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+	variable: '--font-geist-sans',
+	subsets: ['latin'],
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+	variable: '--font-geist-mono',
+	subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
-  title: "Cartograph",
-  description: "A dependency map of a public repository, parsed from its code.",
-};
+	title: 'Cartograph',
+	description: 'Dependency maps of public GitHub repositories',
+}
 
 // Clerk's components read the same tokens as the app, so they follow the
-// theme control without a second theme system.
+// theme control instead of the OS.
 const clerkAppearance = {
-  variables: {
-    colorPrimary: "var(--accent)",
-    colorBackground: "var(--surface)",
-    colorForeground: "var(--fg)",
-    colorMutedForeground: "var(--muted)",
-    colorNeutral: "var(--fg)",
-    colorInput: "var(--bg)",
-    colorInputForeground: "var(--fg)",
-    colorBorder: "var(--border)",
-    fontFamily: "var(--font-geist-sans)",
-    fontSize: "13px",
-    borderRadius: "4px",
-  },
-};
+	variables: {
+		colorBackground: 'var(--surface)',
+		colorForeground: 'var(--fg)',
+		colorMutedForeground: 'var(--fg-muted)',
+		colorPrimary: 'var(--accent)',
+		colorPrimaryForeground: 'var(--accent-fg)',
+		colorInput: 'var(--canvas)',
+		colorInputForeground: 'var(--fg)',
+		colorNeutral: 'var(--fg)',
+		colorBorder: 'var(--line)',
+		fontFamily: 'var(--font-geist-sans)',
+		fontSize: '0.8125rem',
+		borderRadius: '0.25rem',
+	},
+}
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
-  return (
-    // The head script sets data-theme before hydration, so the server's <html>
-    // legitimately differs from the client's.
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-      </head>
-      <body className="flex min-h-full flex-col font-sans text-[13px]">
-        {/* Fallback, not force: a redirect back to the page someone was
-            bounced from still wins, but every method otherwise lands in the
-            same place. */}
-        <ClerkProvider
-          signInUrl={SIGN_IN_PATH}
-          signUpUrl={SIGN_UP_PATH}
-          signInFallbackRedirectUrl={WORKSPACE_PATH}
-          signUpFallbackRedirectUrl={WORKSPACE_PATH}
-          appearance={clerkAppearance}
-        >
-          {children}
-        </ClerkProvider>
-      </body>
-    </html>
-  );
+export default async function RootLayout({ children }: LayoutProps<'/'>) {
+	const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value)
+
+	return (
+		<html
+			lang='en'
+			data-theme={theme}
+			className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+		>
+			<body className='flex h-full flex-col'>
+				<ClerkProvider appearance={clerkAppearance}>{children}</ClerkProvider>
+			</body>
+		</html>
+	)
 }
